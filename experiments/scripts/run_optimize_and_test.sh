@@ -96,7 +96,7 @@ RESULTS_JSON="${RESULTS_DIR}/results.json"
 mkdir -p "$RESULTS_DIR"
 
 LOG_FILE="${RESULTS_DIR}/pipeline.log"
-echo "==== AWF optimize + test pipeline ===="
+echo "==== SUTURE optimize + test pipeline ===="
 echo "  config    : $CONFIG"
 echo "  benchmark : $BENCHMARK"
 echo "  data      : ${DATA:-<default>}"

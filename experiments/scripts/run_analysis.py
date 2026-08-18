@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a concise report from an AWF ``results.json`` artifact."""
+"""Render a concise report from a SUTURE ``results.json`` artifact."""
 
 from __future__ import annotations
 

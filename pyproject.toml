@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "awf"
+name = "suture-wf"
 version = "0.1.0"
-description = "LLM-based Agentic Workflow Optimization Framework"
+description = "Trace-localized workflow repair with calibrated runtime scheduling for LLM agents"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -31,6 +31,10 @@ scicode = [
 ]
 
 [project.scripts]
+suture-optimize = "experiments.scripts.run_optimization:main"
+suture-test = "experiments.scripts.run_test:main"
+suture-analyze = "experiments.scripts.run_analysis:main"
+# Backward-compatible aliases for existing experiment scripts and artifacts.
 awf-optimize = "experiments.scripts.run_optimization:main"
 awf-test = "experiments.scripts.run_test:main"
 awf-analyze = "experiments.scripts.run_analysis:main"

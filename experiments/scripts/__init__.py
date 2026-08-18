@@ -1,1 +1,1 @@
-"""Command-line entry points for AWF experiments."""
+"""Command-line entry points for SUTURE experiments."""

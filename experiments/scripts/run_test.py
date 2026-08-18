@@ -550,7 +550,7 @@ def _claim_official_test_ledger(
     benchmark: str,
     results_file_sha256: str | None = None,
 ) -> dict[str, Any]:
-    """Consume the shared held-out split for the native AWF test command."""
+    """Consume the shared held-out split for the native SUTURE test command."""
     binding = {
         "schema_version": 1,
         "access_mode": "awf_official_test",

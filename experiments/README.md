@@ -1,9 +1,14 @@
 # Running experiments
 
-This guide explains how to run a full AWF experiment: workflow optimization on
+This guide explains how to run a full SUTURE experiment: workflow repair on
 the development split, then the one-shot official evaluation of the
 manifest-bound held-out test split. It documents the one-click pipeline script,
 the underlying Python entrypoints, and the key configuration parameters.
+
+SUTURE's complete protocol is **repair, then route**: workflow optimization
+runs with a frozen scheduler, after which an optional calibration round freezes
+the workflow and selects the cascade scheduler. The historical `awf-*` command
+names remain compatibility aliases for `suture-*`.
 
 ## Prerequisites
 

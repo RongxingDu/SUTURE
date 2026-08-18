@@ -1,1 +1,1 @@
-"""Experiment setups for the AWF framework."""
+"""Experiment setups for the SUTURE framework."""

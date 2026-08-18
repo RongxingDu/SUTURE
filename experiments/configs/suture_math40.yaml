@@ -1,9 +1,9 @@
-# Three-stage research protocol on the balanced AFlow MATH-40 subset:
+# SUTURE three-stage research protocol on the balanced AFlow MATH-40 subset:
 # rounds 1-2 learn workflow content with a frozen graph scheduler; round 3
 # freezes the workflow and calibrates the DeepSeek LAS gate on full validation.
 extends: math_aliyun_qwen35_aggressive_las.yaml
 
-name: math_aliyun_qwen35_bilevel_math40
+name: suture_math40
 output_dir: experiments/results/aliyun_qwen35
 workflow_optimization_rounds: 2
 scheduler_calibration_round: 3

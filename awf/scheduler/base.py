@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class SchedulerAction(str, Enum):
     """Actions the scheduler can select at each step."""
 
-    # Canonical runtime actions from the AWF specification.
+    # Canonical runtime actions from the SUTURE specification.
     CONTINUE = "continue"
     EARLY_EXIT = "early_exit"
     VERIFY = "verify"

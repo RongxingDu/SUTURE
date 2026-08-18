@@ -1,4 +1,4 @@
-"""Pydantic configuration models for the AWF framework."""
+"""Pydantic configuration models for the SUTURE framework."""
 
 from __future__ import annotations
 

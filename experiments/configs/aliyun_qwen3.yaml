@@ -1,6 +1,6 @@
 # Shared Aliyun DashScope Qwen3 backend for real API experiments.
 # Temporary research configuration: the Aliyun key is hardcoded as requested.
-# The API key is injected at runtime and is never persisted by AWF.
+# The API key is injected at runtime and is never persisted by SUTURE.
 extends: default.yaml
 
 output_dir: experiments/results/aliyun_qwen3
