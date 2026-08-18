@@ -1,4 +1,4 @@
-# SUTURE method
+# SUTURE implementation
 
 **SUTURE** stands for **Su**ffix-replayed **T**race-localized **U**pdates with
 **R**untime-adaptive **E**xecution.
@@ -183,28 +183,9 @@ R_{\mathrm{hard}}(W^*,\theta)
 with at least one strict efficiency improvement. Otherwise SUTURE restores the
 passive frozen-workflow scheduler.
 
-## Experimental protocol
+## Data and checkpoint boundaries
 
-The optimization split supplies failures and candidate evidence. Validation
-selects workflow checkpoints and scheduler parameters. The manifest binds the
-ordered dataset, split indices, scientific configuration, checkpoint, and
-execution mode. The official held-out split can be claimed only once and is
-never used to revise the workflow or scheduler.
-
-The aggressive local-promotion mode, full-rerun-admissible repair, and legacy
-Selective Counterfactual Workflow Update (S-CWU) are explicit ablations rather
-than the conservative SUTURE definition.
-
-## Paper-facing description
-
-Recommended title:
-
-> **SUTURE: Trace-Localized Workflow Repair and Calibrated Runtime Scheduling
-> for LLM Agents**
-
-Short description:
-
-> SUTURE first repairs an LLM workflow with failure-localized edits validated
-> by paired suffix replay, then freezes the repaired workflow and calibrates a
-> correctness-constrained cascade scheduler that decides whether to continue,
-> route, verify, repair, or stop at runtime.
+The optimizer consumes only the configured optimization partition. Validation
+selects workflow checkpoints and scheduler parameters. A manifest binds the
+ordered dataset, split indices, configuration, checkpoint, and execution mode
+so later commands can reject incompatible inputs.
