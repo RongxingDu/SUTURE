@@ -1,0 +1,43 @@
+# Targeted inner-workflow self-iteration on 30 newly added Level-5
+# Prealgebra/Precalculus validation examples. The outer scheduler is frozen as
+# a graph follower so accepted effects are attributable to workflow content.
+extends: math_aliyun_qwen35_aggressive_las.yaml
+
+name: math_aliyun_qwen35_pre_failure_self_iterate
+output_dir: experiments/results/aliyun_qwen35
+workflow_optimization_rounds: 3
+
+optimizer:
+  max_rounds: 3
+  candidates_per_round: 12
+  candidate_archive_size: 16
+  exploration_budget: 4
+  success_guard_fraction: 0.25
+  min_success_guards: 3
+  failure_cluster_max_size: 4
+  failure_cluster_min_coverage: 0.0
+  failure_repair_acceptance: any_repair
+  allow_failure_full_rerun: true
+  require_failure_suffix_replay: true
+  aggressive_candidate_generation: true
+  allow_cross_block_graph_updates: true
+  deterministic_block_candidates:
+    - self_refine
+    - dual_solve_judge
+    - verify_repair
+    - conditional_debate
+    - format_repair
+  multi_level_updates: true
+  max_edit_distance: null
+  mu_edit: 0.0
+  epsilon_stat: 0.0
+  exploration_acceptance_floor: -1.0
+  allowed_execution_models:
+    - qwen3.5-flash-2026-02-23
+
+scheduler:
+  scheduler_type: graph
+  allow_deviation: false
+  calibration_enabled: false
+  gate_enabled: false
+  early_exit_enabled: false

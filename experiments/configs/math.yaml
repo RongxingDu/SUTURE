@@ -1,0 +1,23 @@
+# Math Reasoning Experiment Configuration
+extends: default.yaml
+
+name: math
+seed: 123
+
+scheduler:
+  scheduler_type: fixed
+  max_actions_per_query: 30
+  allow_deviation: true
+  system_prompt: |
+    You are a math reasoning workflow scheduler. Given the current execution state,
+    choose continue, verify, repair, reroute, fallback, or early_exit. Execute the
+    analyze and solve units, use verify for verification, and use repair when a
+    verifier signal identifies an error.
+
+optimizer:
+  max_rounds: 8
+  failure_buffer_capacity: 60
+  candidates_per_round: 4
+  epsilon_stat: 0.02
+  lambda_cost: 0.00005
+  mu_edit: 0.02

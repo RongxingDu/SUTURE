@@ -1,0 +1,53 @@
+# Forty-item GPQA pilot using Aliyun Qwen3 API.
+extends: aliyun_qwen3.yaml
+
+name: gpqa_aliyun_qwen3_pilot40
+seed: 20261930
+early_stopping_patience: 2
+early_stopping_min_delta: 0.02
+validation_min_delta: 0.02
+validation_hard_regression_tolerance: 0.0
+confirm_on_opt: true
+confirm_repeats: 2
+
+reward:
+  alpha_process: 0.2
+
+scheduler:
+  scheduler_type: graph
+  max_actions_per_query: 8
+  allow_deviation: false
+
+optimizer:
+  workflow_content_only: true
+  max_rounds: 2
+  failure_buffer_capacity: 16
+  success_guard_fraction: 0.25
+  min_success_guards: 1
+  hard_success_threshold: 1.0
+  candidates_per_round: 3
+  max_edit_distance: 0.5
+  lambda_cost: 0.00005
+  lambda_latency: 0.01
+  lambda_api_cost: 0.0
+  rho_omega: 0.001
+  mu_edit: 0.02
+  epsilon_stat: 0.02
+  use_suffix_replay: true
+  require_failure_suffix_replay: true
+  efficiency_optimization_enabled: true
+  efficiency_anchor_fraction: 0.2
+  efficiency_min_relative_cost: 1.25
+  efficiency_max_anchors: 1
+  candidate_archive_size: 3
+  exploration_budget: 1
+  selective_update_enabled: true
+  gate_min_leaf_support: 2
+  gate_fit_max_traces: 24
+  gate_hard_regression_tolerance: 0.0
+  gate_simplicity_penalty: 0.002
+
+executor:
+  max_steps: 8
+  timeout_per_step: 180.0
+  trace_enabled: true

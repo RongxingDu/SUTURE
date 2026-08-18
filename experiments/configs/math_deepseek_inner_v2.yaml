@@ -1,0 +1,18 @@
+# Next-run configuration for the correctness-grounded inner optimizer.
+# This creates a new run namespace and does not reuse the sealed official test.
+extends: math_deepseek_pilot.yaml
+
+name: math_deepseek_v4_flash_inner_v2
+
+optimizer:
+  workflow_content_only: true
+  # Dual trigger: optimize hard failures and unusually costly hard successes.
+  efficiency_optimization_enabled: true
+  hard_success_threshold: 1.0
+  efficiency_anchor_fraction: 0.2
+  efficiency_min_relative_cost: 1.25
+  efficiency_max_anchors: 1
+  # Keep a small hard-safe search archive and spend one extra evaluation on a
+  # broader scope after a minimal edit has already cleared the local gate.
+  candidate_archive_size: 3
+  exploration_budget: 1

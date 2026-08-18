@@ -1,0 +1,15 @@
+# Next-run configuration for the correctness-grounded inner optimizer.
+# Use with the bubblewrap sandbox; never expose hidden tests to optimizer prompts.
+extends: humaneval_deepseek_pilot.yaml
+
+name: humaneval_deepseek_v4_flash_inner_v2
+
+optimizer:
+  workflow_content_only: true
+  efficiency_optimization_enabled: true
+  hard_success_threshold: 1.0
+  efficiency_anchor_fraction: 0.2
+  efficiency_min_relative_cost: 1.25
+  efficiency_max_anchors: 1
+  candidate_archive_size: 3
+  exploration_budget: 1

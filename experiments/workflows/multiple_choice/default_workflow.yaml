@@ -1,0 +1,56 @@
+name: multiple_choice_direct_v1
+description: "Minimal GPQA/MMLU research workflow: one model call"
+version: "1.0"
+entry_node: start
+metadata:
+  output_contract:
+    terminal_producers:
+      - node_id: answer
+        node_type: llm
+
+nodes:
+  start:
+    node_id: start
+    node_type: start
+    label: "Start"
+
+  answer:
+    node_id: answer
+    node_type: llm
+    label: "Reason and Answer"
+    config:
+      node_type: llm
+      system_prompt: |
+        You are a careful multiple-choice reasoner. Solve the supplied
+        question without external tools. Follow its terminal answer format
+        exactly.
+      prompt_template: "{query}"
+
+  end:
+    node_id: end
+    node_type: end
+    label: "End"
+
+edges:
+  - ["start", "answer"]
+  - ["answer", "end"]
+
+parameters:
+  stages:
+    solve:
+      stage_id: solve
+      label: "Direct multiple-choice solution"
+      blocks:
+        answer:
+          block_id: answer
+          label: "Reason and answer"
+          operators:
+            answer:
+              node_id: answer
+              prompt:
+                system_prompt: |
+                  You are a careful multiple-choice reasoner. Solve the supplied
+                  question without external tools. Follow its terminal answer format
+                  exactly.
+                user_template: "{query}"
+  global_params: {}

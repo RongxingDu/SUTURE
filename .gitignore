@@ -1,0 +1,26 @@
+# Python build & tooling
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Experiment artifacts (kept locally, never committed)
+experiments/results/
+logs/
+
+# Environment & secrets
+.env
+.env.*
+!env.example
+
+# Large benchmark data files
+*.h5
+*.hdf5
+*.parquet
+*.pkl
+
+# OS/editor
+.DS_Store

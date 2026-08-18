@@ -1,0 +1,84 @@
+# Full MATH optimization using Aliyun Qwen3.5-Flash for workflow execution
+# and DeepSeek-V4-Flash for failure diagnosis/candidate update guidance.
+# Source-split driven, AFlow-style single-split practice:
+# - The AFlow "validate" rows (119) are used for BOTH optimization and
+#   validation simultaneously (split_validate_reuse: true, no opt/val split).
+# - AFlow "test" rows (486) form the held-out test split.
+# - hard_success_priority: true makes accuracy the primary promotion driver.
+extends: aliyun_qwen35.yaml
+
+name: math_aliyun_qwen35_full
+seed: 20386949
+early_stopping_patience: 3
+early_stopping_min_delta: 0.02
+validation_min_delta: 0.02
+validation_hard_regression_tolerance: 0.0
+hard_success_priority: true
+# Buffer the complete optimization/validation pool first. After the epoch,
+# replay each failure under the latest accepted workflow and apply CWU in
+# order; this keeps epoch metrics on one incumbent while learning from every
+# failure case.
+confirm_on_opt: false
+confirm_repeats: 0
+
+# With split_validate_reuse the ratios are only used to validate the split
+# contract (must sum to 1.0); opt and val both receive the full validate pool.
+opt_split_ratio: 0.8
+val_split_ratio: 0.1
+test_split_ratio: 0.1
+split_source_field: source_split
+split_dev_value: validate
+split_test_value: test
+split_validate_reuse: true
+
+reward:
+  alpha_process: 0.4
+
+scheduler:
+  scheduler_type: fixed
+  max_actions_per_query: 8
+  allow_deviation: false
+  system_prompt: |
+    You are a math workflow scheduler. Preserve required data dependencies.
+    Prefer early exit only when a complete boxed answer already exists.
+
+optimizer:
+  workflow_content_only: true
+  max_rounds: 3
+  failure_buffer_capacity: 64
+  success_guard_fraction: 0.25
+  min_success_guards: 1
+  hard_success_threshold: 1.0
+  candidates_per_round: 3
+  max_edit_distance: 0.5
+  lambda_cost: 0.00005
+  lambda_latency: 0.01
+  lambda_api_cost: 0.0
+  rho_omega: 0.001
+  epsilon_stat: 0.02
+  failure_update_mode: deferred_sequential
+  online_failure_updates: false
+  # Suffix replay is required for failure-repair acceptance; it is an
+  # evaluation primitive, not outer scheduler/path optimization.
+  use_suffix_replay: true
+  require_failure_suffix_replay: true
+  mu_edit: 0.02
+  llm:
+    provider: deepseek
+    model: deepseek-v4-flash
+    api_key: ${OPENAI_API_KEY}
+    api_base: https://api.deepseek.com
+    temperature: 0.0
+    max_tokens: 2048
+    max_retries: 2
+    timeout_seconds: 180.0
+    extra_kwargs:
+      reasoning_effort: high
+      extra_body:
+        thinking:
+          type: enabled
+
+executor:
+  max_steps: 8
+  timeout_per_step: 180.0
+  trace_enabled: true

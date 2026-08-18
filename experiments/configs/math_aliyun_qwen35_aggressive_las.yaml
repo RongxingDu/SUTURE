@@ -1,0 +1,62 @@
+# Aggressive research protocol: clustered inner CWU + LAS outer gate.
+# LAS reference: https://aclanthology.org/2026.acl-long.581.pdf
+# The full validation promotion gate is intentionally removed; suffix replay
+# and a small sampled-success guard are the local acceptance evidence.
+extends: math_aliyun_qwen35_dual_cascade.yaml
+
+name: math_aliyun_qwen35_aggressive_las
+output_dir: experiments/results/aliyun_qwen35
+promotion_mode: counterfactual_local_aggressive
+early_stopping_patience: null
+early_stopping_min_delta: 0.0
+validation_min_delta: 0.0
+hard_success_priority: true
+
+optimizer:
+  workflow_content_only: true
+  max_rounds: 3
+  failure_buffer_capacity: 128
+  # A small guard sample keeps the local protocol aggressive while still
+  # detecting catastrophic regressions on already-correct paths.
+  success_guard_fraction: 0.15
+  min_success_guards: 2
+  hard_success_threshold: 1.0
+  candidates_per_round: 6
+  candidate_archive_size: 8
+  exploration_budget: 4
+  max_edit_distance: null
+  lambda_cost: 0.00002
+  lambda_latency: 0.0
+  lambda_api_cost: 0.0
+  rho_omega: 0.0
+  epsilon_stat: 0.0
+  mu_edit: 0.0
+  failure_update_mode: deferred_sequential
+  online_failure_updates: false
+  use_suffix_replay: true
+  require_failure_suffix_replay: true
+  failure_cluster_enabled: true
+  failure_cluster_max_size: 8
+  # Every failure in a cluster must succeed under candidate suffix replay;
+  # clustering changes the proposal granularity, not the correctness gate.
+  failure_cluster_min_coverage: 1.0
+  multi_level_updates: true
+  exploration_acceptance_floor: -0.05
+  rollback_window: 3
+
+scheduler:
+  scheduler_type: cascade
+  allow_deviation: true
+  gate_enabled: true
+  gate_formula: las
+  # LAS forwards promising artifacts to the scheduler. Direct gate exits are
+  # disabled so the cascade behavior is measurable as a scheduler intervention.
+  gate_direct_early_exit: false
+  gate_spec_weight: 0.0
+  gate_lite_weight: 0.75
+  gate_agreement_weight: 0.14
+  gate_history_weight: 0.11
+  gate_schedule_threshold: 0.852
+  gate_early_exit_threshold: 0.95
+  gate_high_risk_threshold: 0.90
+  early_exit_enabled: true

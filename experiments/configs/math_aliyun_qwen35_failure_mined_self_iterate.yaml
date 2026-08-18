@@ -1,0 +1,52 @@
+# Two-round inner-workflow self-iteration on a research-only, failure-mined
+# MATH Level-5 subset. Scheduler behavior is frozen so all measured changes
+# are attributable to prompt/operator/block/graph workflow content.
+extends: math_aliyun_qwen35_pre_failure_self_iterate.yaml
+
+name: math_aliyun_qwen35_failure_mined_self_iterate
+output_dir: experiments/results/aliyun_qwen35
+workflow_optimization_rounds: 2
+
+optimizer:
+  max_rounds: 2
+  candidates_per_round: 8
+  candidate_archive_size: 16
+  exploration_budget: 4
+  success_guard_fraction: 0.25
+  min_success_guards: 2
+  failure_cluster_max_size: 4
+  failure_cluster_min_coverage: 0.0
+  failure_repair_acceptance: any_repair
+  # Only hard=0 cases are repeated. The initial observation plus two
+  # confirmations must contain at least two failures before optimization.
+  failure_confirmation_repeats: 2
+  failure_confirmation_min_failures: 2
+  # Candidate repairs use the symmetric rule: at least two successes across
+  # the first candidate run and two uncached confirmation runs.
+  failure_repair_confirmation_enabled: true
+  failure_repair_confirmation_repeats: 2
+  failure_repair_confirmation_min_successes: 2
+  allow_failure_full_rerun: true
+  require_failure_suffix_replay: true
+  aggressive_candidate_generation: true
+  allow_cross_block_graph_updates: true
+  deterministic_block_candidates:
+    - self_refine
+    - dual_solve_judge
+    - verify_repair
+    - conditional_debate
+    - format_repair
+  multi_level_updates: true
+  max_edit_distance: null
+  mu_edit: 0.0
+  epsilon_stat: 0.0
+  exploration_acceptance_floor: -1.0
+  allowed_execution_models:
+    - qwen3.5-flash-2026-02-23
+
+scheduler:
+  scheduler_type: graph
+  allow_deviation: false
+  calibration_enabled: false
+  gate_enabled: false
+  early_exit_enabled: false

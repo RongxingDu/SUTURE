@@ -1,0 +1,32 @@
+# Qwen3.5-Flash workflow execution with DeepSeek-V4-Flash update guidance.
+# The execution model remains Qwen; only anchor localization and candidate
+# generation use the DeepSeek optimizer client.
+extends: math_aliyun_qwen35_full.yaml
+
+name: math_aliyun_qwen35_inner_deepseek_update
+
+optimizer:
+  workflow_content_only: true
+  max_rounds: 2
+  use_suffix_replay: true
+  require_failure_suffix_replay: true
+  mu_edit: 0.02
+  failure_update_mode: deferred_sequential
+  selective_update_enabled: false
+  efficiency_optimization_enabled: false
+  allowed_execution_models:
+    - qwen3.5-flash-2026-02-23
+  llm:
+    provider: deepseek
+    model: deepseek-v4-flash
+    api_key: ${OPENAI_API_KEY}
+    api_base: https://api.deepseek.com
+    temperature: 0.0
+    max_tokens: 2048
+    max_retries: 2
+    timeout_seconds: 180.0
+    extra_kwargs:
+      reasoning_effort: high
+      extra_body:
+        thinking:
+          type: enabled

@@ -1,0 +1,74 @@
+# AWF Default Configuration
+# Shared defaults for all experiments
+
+seed: 42
+opt_split_ratio: 0.6
+val_split_ratio: 0.2
+test_split_ratio: 0.2
+output_dir: experiments/results
+name: default
+validation_min_delta: 0.0
+validation_hard_regression_tolerance: 0.0
+confirm_on_opt: false
+confirm_repeats: 1
+early_stopping_patience: 3
+early_stopping_min_delta: 0.0
+
+reward:
+  alpha_process: 0.8
+
+scheduler:
+  scheduler_type: fixed
+  max_actions_per_query: 50
+  # Execution follows the workflow template; no outer scheduler deviation in
+  # the default inner-only research path.
+  allow_deviation: false
+  llm:
+    provider: openai
+    model: gpt-4o
+    api_key: ${OPENAI_API_KEY}
+    temperature: 0.0
+    max_tokens: 4096
+    max_retries: 3
+    timeout_seconds: 120.0
+
+optimizer:
+  # Current research mode: update prompt/operator/graph-path workflow content.
+  # Scheduler deviation remains disabled; suffix replay is used as the local
+  # failure-repair acceptance gate.
+  workflow_content_only: true
+  max_rounds: 10
+  failure_buffer_capacity: 100
+  success_guard_fraction: 0.2
+  min_success_guards: 0
+  hard_success_threshold: 1.0
+  efficiency_optimization_enabled: false
+  efficiency_anchor_fraction: 0.2
+  efficiency_min_relative_cost: 1.25
+  efficiency_max_anchors: 5
+  candidates_per_round: 5
+  candidate_archive_size: 0
+  exploration_budget: 0
+  max_edit_distance: 0.5
+  lambda_cost: 0.0001
+  lambda_latency: 0.0
+  lambda_api_cost: 0.0
+  rho_omega: 0.001
+  mu_edit: 0.02
+  epsilon_stat: 0.01
+  use_suffix_replay: false
+  require_failure_suffix_replay: null
+  max_suffix_replay_cache: 1000
+  llm:
+    provider: openai
+    model: gpt-4o
+    api_key: ${OPENAI_API_KEY}
+    temperature: 0.0
+    max_tokens: 4096
+    max_retries: 3
+    timeout_seconds: 120.0
+
+executor:
+  max_steps: 100
+  timeout_per_step: 300.0
+  trace_enabled: true

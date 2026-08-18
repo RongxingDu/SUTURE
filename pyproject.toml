@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "awf"
+version = "0.1.0"
+description = "LLM-based Agentic Workflow Optimization Framework"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.30.0",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "tenacity>=8.0",
+    "numpy>=1.24",
+    "networkx>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.0",
+]
+scicode = [
+    "h5py>=3.12",
+    "matplotlib>=3.9",
+    "scipy>=1.14",
+    "sympy>=1.13",
+]
+aflow = [
+    "aiofiles>=25.1",
+    "pandas>=3.0",
+    "regex>=2026.7",
+    "tree-sitter>=0.26",
+]
+
+[project.scripts]
+awf-optimize = "experiments.scripts.run_optimization:main"
+awf-test = "experiments.scripts.run_test:main"
+awf-analyze = "experiments.scripts.run_analysis:main"
+
+[tool.setuptools.packages.find]
+include = ["awf*", "benchmarks*", "experiments*"]
+
+[tool.setuptools.package-data]
+experiments = [
+    "configs/*.yaml",
+    "workflows/*/*.yaml",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

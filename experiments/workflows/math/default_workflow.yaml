@@ -1,0 +1,153 @@
+name: math_reasoning_v1
+description: "Default math reasoning workflow: analyze -> solve -> verify"
+version: "1.0"
+entry_node: start
+metadata:
+  output_contract:
+    terminal_producers:
+      - node_id: finalize
+        node_type: tool
+        tool_name: extract_final_answer
+        requires_outputs:
+          - solve
+
+nodes:
+  start:
+    node_id: start
+    node_type: start
+    label: "Start"
+
+  analyze:
+    node_id: analyze
+    node_type: llm
+    label: "Analyze Problem"
+    config:
+      node_type: llm
+      system_prompt: "You are a math expert. Carefully analyze each problem before solving."
+      prompt_template: |
+        Problem:
+        {query}
+
+        Analyze the problem. What is being asked? What information is given?
+        What mathematical concepts and formulas are relevant?
+
+  solve:
+    node_id: solve
+    node_type: llm
+    label: "Solve Step by Step"
+    config:
+      node_type: llm
+      system_prompt: "You are a math expert. Solve problems step by step with clear reasoning."
+      prompt_template: |
+        Problem:
+        {query}
+
+        Analysis:
+        {analyze_output}
+
+        Solve the problem step by step. Show all your work.
+        Put your final answer in \boxed{{}}.
+
+  verify:
+    node_id: verify
+    node_type: llm
+    label: "Verify Answer"
+    config:
+      node_type: llm
+      system_prompt: "You are a math reviewer. Verify solutions for correctness."
+      prompt_template: |
+        Problem:
+        {query}
+
+        Solution:
+        {solve_output}
+
+        Verify the solution:
+        1. Are the calculations correct?
+        2. Is the reasoning valid?
+        3. Does the answer make sense in context?
+        4. Are there any arithmetic errors?
+
+        If correct, respond "VERIFIED: <final answer>".
+        If incorrect, respond "ERROR: <explanation>" and provide the correct solution.
+
+  finalize:
+    node_id: finalize
+    node_type: tool
+    label: "Return Final Answer"
+    config:
+      node_type: tool
+      tool_name: extract_final_answer
+
+  end:
+    node_id: end
+    node_type: end
+    label: "End"
+
+edges:
+  - ["start", "analyze"]
+  - ["analyze", "solve"]
+  - ["solve", "verify"]
+  - ["verify", "finalize"]
+  - ["finalize", "end"]
+
+parameters:
+  stages:
+    reason:
+      stage_id: reason
+      label: "Mathematical reasoning"
+      blocks:
+        solve:
+          block_id: solve
+          label: "Analyze and solve"
+          operators:
+            analyze:
+              node_id: analyze
+              prompt:
+                system_prompt: "You are a math expert. Carefully analyze each problem before solving."
+                user_template: |
+                  Problem:
+                  {query}
+
+                  Analyze the problem. What is being asked? What information is given?
+                  What mathematical concepts and formulas are relevant?
+            solve:
+              node_id: solve
+              prompt:
+                system_prompt: "You are a math expert. Solve problems step by step with clear reasoning."
+                user_template: |
+                  Problem:
+                  {query}
+
+                  Analysis:
+                  {analyze_output}
+
+                  Solve the problem step by step. Show all your work.
+                  Put your final answer in \boxed{{}}.
+        verification:
+          block_id: verification
+          label: "Verify and finalize"
+          operators:
+            verify:
+              node_id: verify
+              prompt:
+                system_prompt: "You are a math reviewer. Verify solutions for correctness."
+                user_template: |
+                  Problem:
+                  {query}
+
+                  Solution:
+                  {solve_output}
+
+                  Verify the solution:
+                  1. Are the calculations correct?
+                  2. Is the reasoning valid?
+                  3. Does the answer make sense in context?
+                  4. Are there any arithmetic errors?
+
+                  If correct, respond "VERIFIED: <final answer>".
+                  If incorrect, respond "ERROR: <explanation>" and provide the correct solution.
+            finalize:
+              node_id: finalize
+              tool_name: extract_final_answer
+  global_params: {}

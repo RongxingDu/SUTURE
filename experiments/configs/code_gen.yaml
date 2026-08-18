@@ -1,0 +1,21 @@
+# Code Generation Experiment Configuration
+extends: default.yaml
+
+name: code_gen
+seed: 42
+
+scheduler:
+  scheduler_type: fixed
+  max_actions_per_query: 30
+  allow_deviation: true
+  system_prompt: |
+    You are a code generation workflow scheduler. Given the current execution state,
+    choose continue, verify, repair, reroute, fallback, or early_exit. Execute the
+    plan and generation units, use verify for the verifier unit, and use early_exit
+    only when a usable final code result already exists.
+
+optimizer:
+  max_rounds: 5
+  failure_buffer_capacity: 50
+  candidates_per_round: 3
+  epsilon_stat: 0.05

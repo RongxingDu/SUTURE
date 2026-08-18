@@ -1,0 +1,71 @@
+name: scicode_first_subproblem_direct_v1
+description: "Minimal SciCode research workflow: one model call plus safe extraction"
+version: "1.0"
+entry_node: start
+metadata:
+  output_contract:
+    terminal_producers:
+      - node_id: finalize
+        node_type: tool
+        tool_name: extract_scicode_code
+        requires_outputs:
+          - generate
+
+nodes:
+  start:
+    node_id: start
+    node_type: start
+    label: "Start"
+
+  generate:
+    node_id: generate
+    node_type: llm
+    label: "Generate Scientific Code"
+    config:
+      node_type: llm
+      system_prompt: |
+        You are an expert scientific Python programmer. Implement exactly the
+        requested function and obey the supplied code-block contract. Do not
+        invent tests or expose hidden-test assumptions.
+      prompt_template: "{query}"
+
+  finalize:
+    node_id: finalize
+    node_type: tool
+    label: "Extract Code Without Execution"
+    config:
+      node_type: tool
+      tool_name: extract_scicode_code
+
+  end:
+    node_id: end
+    node_type: end
+    label: "End"
+
+edges:
+  - ["start", "generate"]
+  - ["generate", "finalize"]
+  - ["finalize", "end"]
+
+parameters:
+  stages:
+    solve:
+      stage_id: solve
+      label: "Direct scientific implementation"
+      blocks:
+        generation:
+          block_id: generation
+          label: "Generate and normalize code"
+          operators:
+            generate:
+              node_id: generate
+              prompt:
+                system_prompt: |
+                  You are an expert scientific Python programmer. Implement exactly the
+                  requested function and obey the supplied code-block contract. Do not
+                  invent tests or expose hidden-test assumptions.
+                user_template: "{query}"
+            finalize:
+              node_id: finalize
+              tool_name: extract_scicode_code
+  global_params: {}

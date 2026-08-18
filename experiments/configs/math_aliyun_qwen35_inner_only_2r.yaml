@@ -1,0 +1,19 @@
+# Two-round MATH Level-5 experiment with only inner workflow updates.
+# Candidate edits cover prompt, operator, and graph path.  Suffix replay is
+# used as the failure-repair correctness gate; scheduler deviation and outer
+# selective/efficiency updates remain disabled.
+extends: math_aliyun_qwen35_full.yaml
+
+name: math_aliyun_qwen35_inner_only_2r
+
+optimizer:
+  workflow_content_only: true
+  max_rounds: 2
+  efficiency_optimization_enabled: false
+  selective_update_enabled: false
+  use_suffix_replay: true
+  require_failure_suffix_replay: true
+  mu_edit: 0.02
+  candidate_archive_size: 0
+  exploration_budget: 0
+  failure_update_mode: deferred_sequential

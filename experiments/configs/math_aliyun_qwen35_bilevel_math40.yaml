@@ -1,0 +1,62 @@
+# Three-stage research protocol on the balanced AFlow MATH-40 subset:
+# rounds 1-2 learn workflow content with a frozen graph scheduler; round 3
+# freezes the workflow and calibrates the DeepSeek LAS gate on full validation.
+extends: math_aliyun_qwen35_aggressive_las.yaml
+
+name: math_aliyun_qwen35_bilevel_math40
+output_dir: experiments/results/aliyun_qwen35
+workflow_optimization_rounds: 2
+scheduler_calibration_round: 3
+
+optimizer:
+  max_rounds: 3
+  candidates_per_round: 12
+  candidate_archive_size: 12
+  exploration_budget: 4
+  success_guard_fraction: 0.20
+  min_success_guards: 2
+  failure_cluster_max_size: 4
+  failure_cluster_min_coverage: 0.0
+  failure_repair_acceptance: any_repair
+  allow_failure_full_rerun: true
+  require_failure_suffix_replay: true
+  aggressive_candidate_generation: true
+  allow_cross_block_graph_updates: true
+  deterministic_block_candidates:
+    - self_refine
+    - dual_solve_judge
+    - verify_repair
+    - conditional_debate
+    - format_repair
+  multi_level_updates: true
+  max_edit_distance: null
+  mu_edit: 0.0
+  epsilon_stat: 0.0
+  exploration_acceptance_floor: -1.0
+  allowed_execution_models:
+    - qwen3.5-flash-2026-02-23
+  llm:
+    provider: deepseek
+    model: deepseek-v4-flash
+    api_key: ${OPENAI_API_KEY}
+    api_base: https://api.deepseek.com
+    temperature: 0.4
+    max_tokens: 4096
+    max_retries: 1
+    timeout_seconds: 180.0
+    extra_kwargs:
+      extra_body:
+        thinking:
+          type: enabled
+
+scheduler:
+  scheduler_type: cascade
+  allow_deviation: true
+  calibration_enabled: true
+  calibration_thresholds: [0.50, 0.60, 0.70, 0.80, 0.90, 0.98]
+  calibration_weight_candidates:
+    - [0.10, 0.70, 0.10, 0.10]
+    - [0.20, 0.55, 0.15, 0.10]
+    - [0.25, 0.50, 0.15, 0.10]
+    - [0.15, 0.65, 0.05, 0.15]
+  calibration_max_hard_regression: 0.0

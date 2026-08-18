@@ -1,0 +1,5 @@
+# Isolated rerun of the full AFlow MATH level-5 experiment using the
+# sample-streaming failure-triggered optimizer.
+extends: math_aliyun_qwen35_full.yaml
+
+name: math_aliyun_qwen35_online

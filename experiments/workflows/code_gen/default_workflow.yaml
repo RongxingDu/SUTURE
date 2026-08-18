@@ -1,0 +1,147 @@
+name: code_generation_v1
+description: "Default code generation workflow: plan -> generate -> verify"
+version: "1.0"
+entry_node: start
+metadata:
+  output_contract:
+    terminal_producers:
+      - node_id: finalize
+        node_type: tool
+        tool_name: extract_final_code
+        requires_outputs:
+          - generate
+
+nodes:
+  start:
+    node_id: start
+    node_type: start
+    label: "Start"
+
+  plan:
+    node_id: plan
+    node_type: llm
+    label: "Plan Solution"
+    config:
+      node_type: llm
+      system_prompt: "You are an expert Python programmer. Plan the solution approach before writing code."
+      prompt_template: |
+        Problem:
+        {query}
+
+        Plan a step-by-step approach to solve this problem. Outline the algorithm, data structures, and key functions needed.
+
+  generate:
+    node_id: generate
+    node_type: llm
+    label: "Generate Code"
+    config:
+      node_type: llm
+      system_prompt: "You are an expert Python programmer. Write clean, correct, and efficient code."
+      prompt_template: |
+        Problem:
+        {query}
+
+        Based on the plan:
+        {plan_output}
+
+        Write the complete Python function with proper type hints and docstring.
+        Output only the code, no explanation.
+
+  verify:
+    node_id: verify
+    node_type: llm
+    label: "Verify Solution"
+    config:
+      node_type: llm
+      system_prompt: "You are a code reviewer. Check code for correctness, edge cases, and bugs."
+      prompt_template: |
+        Problem:
+        {query}
+
+        Generated code:
+        {generate_output}
+
+        Review the code. Check for:
+        1. Correctness: Does it solve the problem?
+        2. Edge cases: Are all edge cases handled?
+        3. Efficiency: Is the algorithm optimal?
+
+        If the code is correct, respond "PASS". If there are issues, respond "FAIL: <reason>".
+
+  finalize:
+    node_id: finalize
+    node_type: tool
+    label: "Return Generated Code"
+    config:
+      node_type: tool
+      tool_name: extract_final_code
+
+  end:
+    node_id: end
+    node_type: end
+    label: "End"
+
+edges:
+  - ["start", "plan"]
+  - ["plan", "generate"]
+  - ["generate", "verify"]
+  - ["verify", "finalize"]
+  - ["finalize", "end"]
+
+parameters:
+  stages:
+    solve:
+      stage_id: solve
+      label: "Plan and implement"
+      blocks:
+        generation:
+          block_id: generation
+          label: "Code generation"
+          operators:
+            plan:
+              node_id: plan
+              prompt:
+                system_prompt: "You are an expert Python programmer. Plan the solution approach before writing code."
+                user_template: |
+                  Problem:
+                  {query}
+
+                  Plan a step-by-step approach to solve this problem. Outline the algorithm, data structures, and key functions needed.
+            generate:
+              node_id: generate
+              prompt:
+                system_prompt: "You are an expert Python programmer. Write clean, correct, and efficient code."
+                user_template: |
+                  Problem:
+                  {query}
+
+                  Based on the plan:
+                  {plan_output}
+
+                  Write the complete Python function with proper type hints and docstring.
+                  Output only the code, no explanation.
+        verification:
+          block_id: verification
+          label: "Verify and synthesize"
+          operators:
+            verify:
+              node_id: verify
+              prompt:
+                system_prompt: "You are a code reviewer. Check code for correctness, edge cases, and bugs."
+                user_template: |
+                  Problem:
+                  {query}
+
+                  Generated code:
+                  {generate_output}
+
+                  Review the code. Check for:
+                  1. Correctness: Does it solve the problem?
+                  2. Edge cases: Are all edge cases handled?
+                  3. Efficiency: Is the algorithm optimal?
+
+                  If the code is correct, respond "PASS". If there are issues, respond "FAIL: <reason>".
+            finalize:
+              node_id: finalize
+              tool_name: extract_final_code
+  global_params: {}

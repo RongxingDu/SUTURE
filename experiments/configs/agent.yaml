@@ -1,0 +1,22 @@
+# Agent Tasks Experiment Configuration
+extends: default.yaml
+
+name: agent
+seed: 456
+
+scheduler:
+  scheduler_type: fixed
+  max_actions_per_query: 50
+  allow_deviation: true
+  system_prompt: |
+    You are an agent task workflow scheduler. Given the current execution state,
+    choose continue, verify, repair, reroute, fallback, or early_exit. Plan, execute
+    tools, reflect on observations, reroute when a different unit is needed, use
+    fallback after tool failure, and early-exit only with a grounded final answer.
+
+optimizer:
+  max_rounds: 10
+  failure_buffer_capacity: 80
+  candidates_per_round: 5
+  epsilon_stat: 0.01
+  rho_omega: 0.002

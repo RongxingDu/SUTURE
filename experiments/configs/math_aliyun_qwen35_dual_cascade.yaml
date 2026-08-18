@@ -1,0 +1,98 @@
+# Dual-layer MATH pilot with an explicit backend split:
+# - workflow_llm: Aliyun Qwen3.5-Flash is the base/workflow model;
+# - scheduler.llm: DeepSeek-V4-Flash is the compact outer LAS model;
+# - optimizer.llm: DeepSeek diagnoses failures and proposes inner CWU edits.
+extends: math_deepseek_v4_flash_cascade_pilot20.yaml
+
+name: math_aliyun_qwen35_dual_cascade
+output_dir: experiments/results/aliyun_qwen35
+
+# Reuse the AFlow source split: 119 validate rows are used for both inner
+# optimization and validation; 486 test rows remain held out.
+early_stopping_patience: 3
+early_stopping_min_delta: 0.02
+validation_min_delta: 0.02
+validation_hard_regression_tolerance: 0.0
+hard_success_priority: true
+confirm_on_opt: false
+confirm_repeats: 0
+opt_split_ratio: 0.8
+val_split_ratio: 0.1
+test_split_ratio: 0.1
+split_source_field: source_split
+split_dev_value: validate
+split_test_value: test
+split_validate_reuse: true
+
+reward:
+  alpha_process: 0.4
+
+optimizer:
+  workflow_content_only: true
+  max_rounds: 3
+  failure_buffer_capacity: 64
+  success_guard_fraction: 0.25
+  min_success_guards: 1
+  hard_success_threshold: 1.0
+  candidates_per_round: 3
+  max_edit_distance: 0.5
+  lambda_cost: 0.00005
+  lambda_latency: 0.01
+  lambda_api_cost: 0.0
+  rho_omega: 0.001
+  epsilon_stat: 0.02
+  failure_update_mode: deferred_sequential
+  online_failure_updates: false
+  use_suffix_replay: true
+  require_failure_suffix_replay: true
+  mu_edit: 0.02
+
+workflow_llm:
+  provider: aliyun
+  model: qwen3.5-flash-2026-02-23
+  api_key: ${OPENAI_API_KEY}
+  api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+  temperature: 0.0
+  max_tokens: 2048
+  max_retries: 1
+  timeout_seconds: 180.0
+  extra_kwargs:
+    extra_body:
+      enable_thinking: false
+
+scheduler:
+  scheduler_type: cascade
+  allow_deviation: true
+  max_actions_per_query: 8
+  llm:
+    provider: deepseek
+    model: deepseek-v4-flash
+    api_key: ${OPENAI_API_KEY}
+    api_base: https://api.deepseek.com
+    temperature: 0.0
+    max_tokens: 512
+    max_retries: 1
+    timeout_seconds: 120.0
+    extra_kwargs:
+      extra_body:
+        thinking:
+          type: disabled
+  gate_enabled: true
+  gate_formula: las
+  gate_direct_early_exit: true
+  gate_spec_weight: 0.07
+  gate_lite_weight: 0.82
+  gate_agreement_weight: 0.07
+  gate_history_weight: 0.04
+  gate_schedule_threshold: 0.55
+  gate_early_exit_threshold: 0.824
+  gate_high_risk_threshold: 0.90
+  early_exit_enabled: true
+  scheduler_max_tokens: 384
+  scheduler_query_max_chars: 320
+  scheduler_artifact_max_chars: 1200
+  system_prompt: |
+    You are the DeepSeek-V4-Flash outer workflow scheduler. Return one JSON
+    object only: {"action": "continue|early_exit|verify|reroute|repair|fallback",
+    "target_node": "optional_node_id"}. Preserve dependencies; use early_exit
+    only for a complete answer and use verify for high-risk uncertain answers.

@@ -1,0 +1,29 @@
+# Dual-layer MATH pilot: inner CWU edits prompt/operator/graph-path content,
+# while the outer cascade gate + DeepSeek scheduler edits the execution path.
+# The gate is zero-generation-call; only borderline artifacts invoke LAS.
+extends: math_deepseek_pilot.yaml
+
+name: math_deepseek_v4_flash_cascade_pilot20
+
+scheduler:
+  scheduler_type: cascade
+  allow_deviation: true
+  max_actions_per_query: 8
+  gate_enabled: true
+  gate_spec_weight: 0.07
+  gate_lite_weight: 0.82
+  gate_agreement_weight: 0.07
+  gate_history_weight: 0.04
+  gate_schedule_threshold: 0.55
+  gate_early_exit_threshold: 0.824
+  gate_high_risk_threshold: 0.90
+  early_exit_enabled: true
+  scheduler_max_tokens: 384
+  scheduler_query_max_chars: 320
+  scheduler_artifact_max_chars: 1200
+  system_prompt: |
+    You are the DeepSeek-V4-Flash outer workflow scheduler. Return one JSON
+    object only: {"action": "continue|early_exit|verify|reroute|repair|fallback",
+    "target_node": "optional_node_id"}. Preserve dependencies; use early_exit
+    only for a complete answer and use verify for high-risk uncertain answers.
+

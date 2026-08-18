@@ -1,0 +1,30 @@
+# Shared Aliyun DashScope Qwen3 backend for real API experiments.
+# Temporary research configuration: the Aliyun key is hardcoded as requested.
+# The API key is injected at runtime and is never persisted by AWF.
+extends: default.yaml
+
+output_dir: experiments/results/aliyun_qwen3
+
+scheduler:
+  llm:
+    provider: aliyun
+    model: qwen3-235b-a22b
+    api_key: ${OPENAI_API_KEY}
+    api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    temperature: 0.0
+    max_tokens: 2048
+    max_retries: 1
+    timeout_seconds: 180.0
+
+optimizer:
+  allowed_execution_models:
+    - qwen3-235b-a22b
+  llm:
+    provider: aliyun
+    model: qwen3-235b-a22b
+    api_key: ${OPENAI_API_KEY}
+    api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    temperature: 0.0
+    max_tokens: 2048
+    max_retries: 1
+    timeout_seconds: 180.0
