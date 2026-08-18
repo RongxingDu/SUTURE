@@ -1,8 +1,0 @@
-extends: math_deepseek_pilot.yaml
-
-name: math_deepseek_v4_flash_scheduler_ablation
-
-scheduler:
-  scheduler_type: graph
-  max_actions_per_query: 8
-  allow_deviation: true

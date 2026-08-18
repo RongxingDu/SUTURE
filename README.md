@@ -162,11 +162,7 @@ backend while `scheduler.llm` remains DeepSeek; see
 GPQA, MMLU, and SciCode pilot configs are also included. Install SciCode's
 scientific evaluator dependencies with `pip install -e '.[scicode]'`; SciCode
 requires the official `test_data.h5` plus the explicit bubblewrap execution
-flag. GPQA/MMLU share the minimal one-call multiple-choice workflow. The
-artifact-backed AFlow comparison adapter needs
-`pip install -e '.[aflow]'`. The current local AFlow one-update integration is
-GPQA-only; MMLU and SciCode support AWF/Vanilla evaluation but are not labelled
-as implemented AFlow baselines.
+flag. GPQA/MMLU share the minimal one-call multiple-choice workflow.
 
 The completed 12/4/4 GPQA mechanism pilot, including the negative held-out
 efficiency result, is reported in

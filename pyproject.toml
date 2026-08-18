@@ -29,12 +29,6 @@ scicode = [
     "scipy>=1.14",
     "sympy>=1.13",
 ]
-aflow = [
-    "aiofiles>=25.1",
-    "pandas>=3.0",
-    "regex>=2026.7",
-    "tree-sitter>=0.26",
-]
 
 [project.scripts]
 awf-optimize = "experiments.scripts.run_optimization:main"
